@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>microservices-lab</name>
-	<description>Demo project for Spring Boot</description>
+	<description>The sandbox to play with Spring Boot Cloud and Docker</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -37,6 +37,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+		 <dependency>
+        	<groupId>javax.xml.bind</groupId>
+        	<artifactId>jaxb-api</artifactId>
+        	<version>2.3.0</version>
+    	</dependency>
 
 		<dependency>
 			<groupId>com.h2database</groupId>
