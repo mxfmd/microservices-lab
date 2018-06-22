@@ -23,7 +23,7 @@ public class BookRecommendationController {
     @GetMapping(path = "book-recommendation")
     public Book recommendBook() {
         int id = new Random().nextInt(3) + 1;
-        ResponseEntity<Resource<Book>> entity = restTemplate.exchange("http://localhost:8081/books/" + id, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Book>>() {
+        ResponseEntity<Resource<Book>> entity = restTemplate.exchange("http://book-service:8081/books/" + id, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Book>>() {
         }, Collections.emptyMap());
         return entity.getBody().getContent();
     }
