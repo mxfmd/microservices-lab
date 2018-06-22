@@ -9,8 +9,8 @@ To build an application run:
 
 # Docker
 ```
-docker build -t book-service .   
-docker run -d --name book-service -p 8081:8081 book-service
+docker build -t book-recommendation .   
+docker run -d --name book-recommendation -p 8082:8082 book-recommendation
 ```
 
-An application is accessible through the _http://localhost:8081_.
+An application is accessible through the _http://localhost:8082_.
