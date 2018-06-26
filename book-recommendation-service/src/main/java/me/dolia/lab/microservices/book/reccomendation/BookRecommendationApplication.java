@@ -2,14 +2,15 @@ package me.dolia.lab.microservices.book.reccomendation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableDiscoveryClient
-@EnableWebMvc
+@EnableCircuitBreaker
+@EnableFeignClients
 @SpringBootApplication
 public class BookRecommendationApplication {
 
@@ -19,7 +20,7 @@ public class BookRecommendationApplication {
 
     @Bean
     @LoadBalanced
-    public RestTemplate createRestTemplate() {
-        return new RestTemplate();
+    public RestTemplate createRestTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 }
