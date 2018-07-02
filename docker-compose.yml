@@ -10,6 +10,15 @@ services:
     build:
       context: ./discovery-service
       dockerfile: Dockerfile
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
   book-service:
     container_name: book-service
     build:
@@ -22,8 +31,6 @@ services:
     build:
       context: ./book-recommendation-service
       dockerfile: Dockerfile
-    ports:
-      - '8082:8082'
     environment:
       - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
