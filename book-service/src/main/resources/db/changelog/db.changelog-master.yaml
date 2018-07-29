@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: "Me"
+      changes:
+         - createTable:
+              tableName: book
+              columns:
+                - column:
+                    name: id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      - primaryKeyName: book_pk
+                      - primaryKey: true
+                      - nullable: false
+                - column:
+                    name: name
+                    type: varchar(256)
+                - column:
+                    name: author
+                    type: varchar(256)
+  - changeSet:
+      id: 2
+      author: "Me"
+      changes:
+        - insert:
+            tableName: book
+            columns:
+              - column:
+                  name: name
+                  value: "Clean Architecture: A Craftsman's Guide to Software Structure and Design"
+              - column:
+                  name: author
+                  value: "Robert Cecil Martin"
+        - insert:
+            tableName: book
+            columns:
+              - column:
+                  name: name
+                  value: "Cracking the Coding Interview"
+              - column:
+                  name: author
+                  value: "Gayle Laakmann McDowell"
+        - insert:
+            tableName: book
+            columns:
+              - column:
+                  name: name
+                  value: "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future"
+              - column:
+                  name: author
+                  value: "Ashlee Vance"
