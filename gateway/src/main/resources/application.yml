@@ -1,5 +1,9 @@
 zuul:
   prefix: /api
+  routes:
+    book-recommendation:
+      path: /**
+      serviceId: BOOK-RECOMMENDATION-SERVICE
 eureka:
   client:
     service-url:
