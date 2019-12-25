@@ -11,7 +11,7 @@
 
     <parent>
         <groupId>me.dolia.lab.microservices</groupId>
-        <artifactId>microservices-lab</artifactId>
+        <artifactId>book-service-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
