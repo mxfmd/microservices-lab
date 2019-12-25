@@ -7,3 +7,5 @@ spring:
         git:
           uri: https://github.com/MaksymDolia/microservices-lab.git
           search-paths: config-data
+  application:
+    name: config-service
