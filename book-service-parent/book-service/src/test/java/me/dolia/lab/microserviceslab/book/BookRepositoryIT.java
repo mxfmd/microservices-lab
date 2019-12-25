@@ -1,4 +1,4 @@
-package me.dolia.lab.microserviceslab;
+package me.dolia.lab.microserviceslab.book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

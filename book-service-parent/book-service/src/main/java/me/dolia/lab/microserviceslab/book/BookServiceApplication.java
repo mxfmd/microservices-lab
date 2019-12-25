@@ -1,4 +1,4 @@
-package me.dolia.lab.microserviceslab;
+package me.dolia.lab.microserviceslab.book;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
