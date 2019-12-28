@@ -10,13 +10,25 @@
 
   <name>book-service-parent</name>
 
-  <modules>
-    <module>book-service</module>
-  </modules>
-
   <parent>
     <groupId>me.dolia.lab.microservices</groupId>
     <artifactId>microservices-lab</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>me.dolia.lab.microservices</groupId>
+        <artifactId>book-service-client-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>book-service</module>
+    <module>book-service-client</module>
+    <module>book-service-client-common</module>
+  </modules>
 </project>
