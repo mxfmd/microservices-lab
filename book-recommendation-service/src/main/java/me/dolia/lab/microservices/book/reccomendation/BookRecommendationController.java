@@ -25,7 +25,7 @@ public class BookRecommendationController {
         return bookServiceClient.getBookById((long) id).getContent();
     }
 
-    private Book reliable() {
+    private Book reliable() {   //NOSONAR
         Book book = new Book();
         book.setName("DEFAULT");
         return book;
