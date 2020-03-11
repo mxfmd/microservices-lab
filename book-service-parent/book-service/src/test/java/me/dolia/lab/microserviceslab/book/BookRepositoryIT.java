@@ -38,7 +38,7 @@ public class BookRepositoryIT {
         });
 
     assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    var expected = new Book(
+    var expected = Book.of(
         "Clean Architecture: A Craftsman's Guide to Software Structure and Design",
         "Robert Cecil Martin");
     assertThat(booksResourceEntity.getBody()).isNotNull();
@@ -55,10 +55,10 @@ public class BookRepositoryIT {
 
     assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     var expected = new Book[]{
-        new Book("Clean Architecture: A Craftsman's Guide to Software Structure and Design",
+        Book.of("Clean Architecture: A Craftsman's Guide to Software Structure and Design",
             "Robert Cecil Martin"),
-        new Book("Cracking the Coding Interview", "Gayle Laakmann McDowell"),
-        new Book("Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future", "Ashlee Vance")
+        Book.of("Cracking the Coding Interview", "Gayle Laakmann McDowell"),
+        Book.of("Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future", "Ashlee Vance")
     };
     assertThat(booksResourceEntity.getBody()).isNotNull();
     assertThat(booksResourceEntity.getBody().getContent()).containsExactly(expected);
