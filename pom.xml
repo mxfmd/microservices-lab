@@ -20,7 +20,7 @@
   <description>The sandbox to play with Spring Boot Cloud and Docker</description>
 
   <modules>
-    <module>book-service</module>
+    <module>book-service-parent</module>
     <module>book-recommendation-service</module>
     <module>discovery-service</module>
     <module>config-service</module>
