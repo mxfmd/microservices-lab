@@ -10,8 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,7 +34,7 @@ public class BookRepositoryIT {
     var url = "http://localhost:" + port + "/books/1";
 
     var booksResourceEntity = rest
-        .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Resource<Book>>() {
+        .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<EntityModel<Book>>() {
         });
 
     assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -50,7 +50,7 @@ public class BookRepositoryIT {
     var url = "http://localhost:" + port + "/books";
 
     var booksResourceEntity = rest.exchange(url, HttpMethod.GET, null,
-        new ParameterizedTypeReference<PagedResources<Book>>() {
+        new ParameterizedTypeReference<PagedModel<Book>>() {
         });
 
     assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
