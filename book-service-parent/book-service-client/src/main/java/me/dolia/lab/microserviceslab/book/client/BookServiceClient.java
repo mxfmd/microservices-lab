@@ -6,9 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient("book-service")
+@FeignClient(
+    name = "book-service",
+    configuration = BookServiceClientConfiguration.class
+)
 public interface BookServiceClient {
 
-  @GetMapping(path = "/books/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @GetMapping(path = "/books/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   BookResponse getBookById(@PathVariable("id") long id);
 }

@@ -23,7 +23,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-    properties = "book-service.ribbon.listOfServers=http://localhost:${wiremock.server.port}",
+    properties = {
+        "book-service.ribbon.listOfServers=http://localhost:${wiremock.server.port}",
+        "feign.logging.enabled=true",
+        "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
+    },
     classes = BookServiceClientTestConfiguration.class,
     webEnvironment = WebEnvironment.NONE
 )
