@@ -1,33 +1,40 @@
 package me.dolia.lab.microservices.book.reccomendation;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import java.util.Random;
+import me.dolia.lab.microserviceslab.book.client.BookServiceClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Random;
 
 @RestController
 public class BookRecommendationController {
 
-    private final int maxBookId;
-    private final BookServiceClient bookServiceClient;
+  private final int maxBookId;
+  private final BookServiceClient bookServiceClient;
 
-    public BookRecommendationController(@Value("${maxBookId}") int maxBookId, BookServiceClient bookServiceClient) {
-        this.maxBookId = maxBookId;
-        this.bookServiceClient = bookServiceClient;
-    }
+  public BookRecommendationController(@Value("${maxBookId}") int maxBookId,
+      BookServiceClient bookServiceClient) {
+    this.maxBookId = maxBookId;
+    this.bookServiceClient = bookServiceClient;
+  }
 
-    @HystrixCommand(fallbackMethod = "reliable")
-    @GetMapping(path = "book-recommendation")
-    public Book recommendBook() {
-        int id = new Random().nextInt(maxBookId) + 1;
-        return bookServiceClient.getBookById((long) id).getContent();
-    }
+  @HystrixCommand(fallbackMethod = "reliable")
+  @GetMapping(path = "book-recommendation", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Book recommendBook() {
+    var id = new Random().nextInt(maxBookId) + 1;
+    var response = bookServiceClient.getBookById(id);
+    var book = new Book();
+    book.setId((long) id);
+    book.setAuthor(response.getAuthor());
+    book.setName(response.getName());
+    return book;
+  }
 
-    private Book reliable() {   //NOSONAR
-        Book book = new Book();
-        book.setName("DEFAULT");
-        return book;
-    }
+  private Book reliable() {   //NOSONAR
+    Book book = new Book();
+    book.setName("DEFAULT");
+    return book;
+  }
 }
