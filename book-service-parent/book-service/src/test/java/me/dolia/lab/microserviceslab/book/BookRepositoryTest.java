@@ -20,13 +20,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
     properties = {
+        "eureka.client.enabled=false",
+        "config.client.enabled=false",
         "book-service.ribbon.listOfServers=http://localhost:${local.server.port}",
         "feign.logging.enabled=true",
         "logging.level.me.dolia.lab.microserviceslab=trace",
         "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
     },
     webEnvironment = WebEnvironment.RANDOM_PORT)
-public class BookRepositoryIT {
+public class BookRepositoryTest {
 
   @LocalServerPort
   private int port;
