@@ -2,6 +2,8 @@ package me.dolia.lab.microserviceslab.book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import me.dolia.lab.microserviceslab.book.client.BookServiceClient;
+import me.dolia.lab.microserviceslab.book.client.common.BookResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
     properties = {
-        "logging.level.me.dolia.lab.microserviceslab=trace"
+        "book-service.ribbon.listOfServers=http://localhost:${local.server.port}",
+        "feign.logging.enabled=true",
+        "logging.level.me.dolia.lab.microserviceslab=trace",
+        "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
     },
     webEnvironment = WebEnvironment.RANDOM_PORT)
 public class BookRepositoryIT {
@@ -27,22 +31,18 @@ public class BookRepositoryIT {
   @LocalServerPort
   private int port;
   @Autowired
+  private BookServiceClient client;
+  @Autowired
   private TestRestTemplate rest;
 
   @Test
   public void retrievesSingleBook() {
-    var url = "http://localhost:" + port + "/books/1";
+    var book = client.getBookById(1L);
 
-    var booksResourceEntity = rest
-        .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<EntityModel<Book>>() {
-        });
-
-    assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    var expected = Book.of(
+    var expected = new BookResponse(
         "Clean Architecture: A Craftsman's Guide to Software Structure and Design",
         "Robert Cecil Martin");
-    assertThat(booksResourceEntity.getBody()).isNotNull();
-    assertThat(booksResourceEntity.getBody().getContent()).isEqualTo(expected);
+    assertThat(book).isEqualTo(expected);
   }
 
   @Test
