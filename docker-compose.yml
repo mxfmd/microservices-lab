@@ -19,13 +19,18 @@ services:
       - '8080:8080'
     environment:
       - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
+    depends_on:
+      - discovery-service
   book-service:
     container_name: book-service
     build:
-      context: ./book-service
+      context: ./book-service-parent/book-service
       dockerfile: Dockerfile
     environment:
       - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
+    depends_on:
+      - config-service
+      - discovery-service
   book-recommendation-service:
     container_name: book-recommendation-service
     build:
@@ -34,3 +39,7 @@ services:
     environment:
       - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+    depends_on:
+      - config-service
+      - discovery-service
+      - book-service
