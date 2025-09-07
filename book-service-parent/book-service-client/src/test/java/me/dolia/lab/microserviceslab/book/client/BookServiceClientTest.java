@@ -11,16 +11,13 @@ import me.dolia.lab.microserviceslab.book.client.BookServiceClientTest.BookServi
 import me.dolia.lab.microserviceslab.book.client.common.BookResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.wiremock.spring.EnableWireMock;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     properties = {
         "spring.cloud.discovery.client.simple.instances.book-service[0].uri=http://localhost:${wiremock.server.port}",
