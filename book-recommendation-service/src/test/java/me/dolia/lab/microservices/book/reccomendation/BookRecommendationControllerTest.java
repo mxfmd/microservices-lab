@@ -1,14 +1,10 @@
 package me.dolia.lab.microservices.book.reccomendation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
 import me.dolia.lab.microserviceslab.book.client.BookServiceClient;
 import me.dolia.lab.microserviceslab.book.client.BookServiceClientAutoConfiguration;
 import me.dolia.lab.microserviceslab.book.client.common.BookResponse;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,9 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     properties = {
         "eureka.client.enabled=false",
@@ -47,8 +47,9 @@ public class BookRecommendationControllerTest {
 
     var book = rest.getForObject(url, Book.class);
 
-    assertThat(book).isEqualToComparingOnlyGivenFields(bookResponse, "name", "author")
-        .extracting(Book::getId)
-        .isNotNull();
+    assertThat(book).usingRecursiveComparison()
+        .ignoringFields("id")
+        .isEqualTo(bookResponse);
+    assertThat(book.getId()).isNotNull();
   }
 }

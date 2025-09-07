@@ -1,11 +1,9 @@
 package me.dolia.lab.microserviceslab.book;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import me.dolia.lab.microserviceslab.book.client.BookServiceClient;
 import me.dolia.lab.microserviceslab.book.client.common.BookResponse;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -15,19 +13,21 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-    properties = {
-        "eureka.client.enabled=false",
-        "config.client.enabled=false",
-        "book-service.ribbon.listOfServers=http://localhost:${local.server.port}",
-        "feign.logging.enabled=true",
-        "logging.level.me.dolia.lab.microserviceslab=trace",
-        "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
-    },
-    webEnvironment = WebEnvironment.RANDOM_PORT)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {
+    "eureka.client.enabled=false",
+    "config.client.enabled=false",
+    "spring.cloud.discovery.client.simple.enabled=true",
+    "server.port=8081",
+    "spring.cloud.discovery.client.simple.instances.book-service[0].uri=http://localhost:8081",
+    "feign.logging.enabled=true",
+    "logging.level.me.dolia.lab.microserviceslab=trace",
+    "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
+}, webEnvironment = WebEnvironment.DEFINED_PORT)
 public class BookRepositoryTest {
 
   @LocalServerPort
@@ -56,7 +56,7 @@ public class BookRepositoryTest {
         });
 
     assertThat(booksResourceEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    var expected = new Book[]{
+    var expected = new Book[] {
         Book.of("Clean Architecture: A Craftsman's Guide to Software Structure and Design",
             "Robert Cecil Martin"),
         Book.of("Cracking the Coding Interview", "Gayle Laakmann McDowell"),

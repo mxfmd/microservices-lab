@@ -7,40 +7,38 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.netflix.hystrix.Hystrix;
 import me.dolia.lab.microserviceslab.book.client.BookServiceClientTest.BookServiceClientTestConfiguration;
 import me.dolia.lab.microserviceslab.book.client.common.BookResponse;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.wiremock.spring.EnableWireMock;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     properties = {
-        "book-service.ribbon.listOfServers=http://localhost:${wiremock.server.port}",
+        "spring.cloud.discovery.client.simple.instances.book-service[0].uri=http://localhost:${wiremock.server.port}",
         "feign.logging.enabled=true",
         "logging.level.me.dolia.lab.microserviceslab.book.client=debug"
     },
     classes = BookServiceClientTestConfiguration.class,
     webEnvironment = WebEnvironment.NONE
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 public class BookServiceClientTest {
 
   @Autowired
   private BookServiceClient client;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     WireMock.reset();
-    Hystrix.reset();
   }
 
   @Test

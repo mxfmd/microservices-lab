@@ -1,6 +1,6 @@
 package me.dolia.lab.microservices.book.reccomendation;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.Random;
 import me.dolia.lab.microserviceslab.book.client.BookServiceClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ public class BookRecommendationController {
     this.bookServiceClient = bookServiceClient;
   }
 
-  @HystrixCommand(fallbackMethod = "reliable")
+  @CircuitBreaker(name = "bookService", fallbackMethod = "reliable")
   @GetMapping(path = "book-recommendation", produces = MediaType.APPLICATION_JSON_VALUE)
   public Book recommendBook() {
     var id = new Random().nextInt(maxBookId) + 1;
@@ -32,7 +32,7 @@ public class BookRecommendationController {
     return book;
   }
 
-  private Book reliable() {   //NOSONAR
+  private Book reliable(Throwable e) {   //NOSONAR
     Book book = new Book();
     book.setName("DEFAULT");
     return book;
