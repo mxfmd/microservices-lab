@@ -1,9 +1,13 @@
-zuul:
-  prefix: /api
-  routes:
-    book-recommendation:
-      path: /**
-      serviceId: BOOK-RECOMMENDATION-SERVICE
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: book-recommendation-service
+          uri: lb://BOOK-RECOMMENDATION-SERVICE
+          predicates:
+            - Path=/api/book-recommendation
+          filters:
+            - StripPrefix=1
 eureka:
   client:
     service-url:
