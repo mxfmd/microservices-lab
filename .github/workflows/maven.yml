@@ -27,19 +27,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: "21"
           distribution: "temurin"
           cache: maven
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
@@ -49,9 +45,10 @@ jobs:
         with:
           name: jar-artifacts
           path: |
-            */target/*.jar
-            !*/target/*-sources.jar
-            !*/target/*-javadoc.jar
+            **/target/*.jar
+            !**/target/*-sources.jar
+            !**/target/*-javadoc.jar
+          retention-days: 1
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     # - name: Update dependency graph
@@ -69,16 +66,30 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        service: [ config-service , discovery-service , gateway , book-service , book-recommendation-service ]
+        include:
+          - service: config-service
+            path: config-service
+          - service: discovery-service
+            path: discovery-service
+          - service: gateway
+            path: gateway
+          - service: book-service
+            path: book-service-parent/book-service
+          - service: book-recommendation-service
+            path: book-recommendation-service
+      fail-fast: false  # Continue building other services if one fails
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: jar-artifacts
+          path: .
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -111,6 +122,10 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -119,12 +134,12 @@ jobs:
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
           context: .
-          file: ./${{ matrix.service }}/Dockerfile
+          file: ./${{ matrix.path }}/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
