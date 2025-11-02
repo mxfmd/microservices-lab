@@ -1,0 +1,166 @@
+services:
+  config-service:
+    container_name: config-service
+    image: ghcr.io/mxfmd/microservices-lab/config-service:latest
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - microservices-lab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=config"
+
+  discovery-service:
+    container_name: discovery-service
+    image: ghcr.io/mxfmd/microservices-lab/discovery-service:latest
+    depends_on:
+      config-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - microservices-lab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=discovery"
+
+  gateway:
+    container_name: gateway
+    image: ghcr.io/mxfmd/microservices-lab/gateway:latest
+    environment:
+      - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - microservices-lab-network
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.microservices-lab-gateway.rule=Host(`microservices-lab.dolia.me`)"
+      - "traefik.docker.network=traefik-network"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=gateway"
+
+  book-service:
+    container_name: book-service
+    image: ghcr.io/mxfmd/microservices-lab/book-service:latest
+    environment:
+      - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - microservices-lab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=book-service"
+
+  book-recommendation-service:
+    container_name: book-recommendation-service
+    image: ghcr.io/mxfmd/microservices-lab/book-recommendation-service:latest
+    environment:
+      - SERVICE_URL_DEFAULT_ZONE=http://discovery-service:8761/eureka
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+    depends_on:
+      config-service:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      book-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - microservices-lab-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=book-recommendation-service"
+
+networks:
+  microservices-lab-network:
+    driver: bridge
+  traefik-network:
+    external: true
